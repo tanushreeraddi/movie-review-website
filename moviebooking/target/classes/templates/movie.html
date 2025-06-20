@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Movie Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f9f9f9;
+            padding: 30px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            min-height: 400px;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        table {
+            background-color: #ffffff;
+        }
+
+        .btn-add {
+            position: static;  /* button in normal flow */
+            margin-top: 20px;
+            float: left;       /* align left */
+            min-width: 120px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Movie Management</h1>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
+        <tr>
+            <!-- Removed Poster column header -->
+            <th>Movie Name</th>
+            <th>Type</th>
+            <th>Rating</th>
+            <th>Duration</th>
+            <th>Release Date</th>
+            <th>Theaters</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="movie : ${movies}">
+            <!-- Removed Poster image cell -->
+            <td th:text="${movie.movieName}"></td>
+            <td th:text="${movie.movieType}"></td>
+            <td th:text="${movie.rating}"></td>
+            <td th:text="${movie.duration}"></td>
+            <td th:text="${#temporals.format(movie.releaseDate, 'dd MMM yyyy')}"></td>
+            <td>
+                <ul class="mb-0 ps-3">
+                    <li th:each="t : ${movie.theaters}" th:text="${t.name}"></li>
+                </ul>
+            </td>
+            <td>
+                <a th:href="@{'/movie-ticket-booking/movie/edit/' + ${movie.id}}" class="btn btn-primary btn-sm">Edit</a>
+				<a th:href="@{'/movie-ticket-booking/movie/delete/' + ${movie.id}}"
+				   onclick="return confirm('Are you sure you want to delete this movie?');"
+				   class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="clearfix">
+        <a href="/movie-ticket-booking/movie/add" class="btn btn-primary btn-add">Add New Movie</a>
+    </div>
+</div>
+</body>
+</html>

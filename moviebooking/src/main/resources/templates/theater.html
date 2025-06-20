@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Theater Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f9f9f9; /* light gray background */
+            padding: 30px;
+        }
+        .container {
+            background-color: #ffffff; /* white container */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            /* Remove position relative and min-height to allow natural flow */
+        }
+        h1 {
+            color: #007bff; /* bootstrap blue */
+            margin-bottom: 30px;
+            text-align: center; /* center the heading */
+        }
+        table {
+            background-color: #ffffff; /* white background for table */
+        }
+        .btn-add {
+            /* Remove absolute positioning */
+            display: inline-block;
+            margin-top: 20px;
+            min-width: 120px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn {
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Theater Management</h1>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Screens</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="theater : ${theaters}">
+            <td th:text="${theater.id}"></td>
+            <td th:text="${theater.name}"></td>
+            <td th:text="${theater.location}"></td>
+            <td th:text="${theater.screens}"></td>
+            <td>
+                <a th:href="@{'/movie-ticket-booking/theater/edit/' + ${theater.id}}" class="btn btn-primary btn-sm">Edit</a>
+                <a th:href="@{'/movie-ticket-booking/theater/delete/' + ${theater.id}}"
+                   onclick="return confirm('Are you sure you want to delete this theater?');"
+                   class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Button naturally placed below table -->
+    <a href="/movie-ticket-booking/theater/add" class="btn btn-primary btn-add">Add New Theater</a>
+</div>
+</body>
+</html>

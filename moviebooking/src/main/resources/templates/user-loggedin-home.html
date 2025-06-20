@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Movie Home</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 2rem;
+			background: #f4f4f9;
+			color: #333;
+		}
+
+		h1 {
+			margin-bottom: 1rem;
+		}
+
+		.search-box {
+			margin-bottom: 1.5rem;
+			display: flex;
+			gap: 0.5rem;
+		}
+
+		.search-box input[type="text"] {
+			padding: 0.5rem;
+			font-size: 1rem;
+			width: 300px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+		.search-box button {
+			padding: 0.5rem 1rem;
+			font-size: 1rem;
+			background-color: #28a745;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		.search-box button:hover {
+			background-color: #218838;
+		}
+
+		.movie-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			gap: 1.5rem;
+		}
+
+		.movie-card {
+			background: white;
+			border-radius: 8px;
+			box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+			padding: 0.5rem;
+			text-align: center;
+			max-width: 250px;
+			margin: 0 auto;
+		}
+
+		.movie-poster {
+			width: 250px;
+			height: 225px;
+			object-fit: cover;
+			border-radius: 6px;
+			margin-bottom: 0.5rem;
+			background-color: #ddd;
+		}
+
+		.movie-title {
+			font-weight: bold;
+			font-size: 1rem;
+			margin: 0.2rem 0;
+			color: #222;
+		}
+
+		.movie-year {
+			color: #666;
+			font-size: 0.9rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.review-form {
+			text-align: left;
+			margin-top: 0.5rem;
+		}
+
+		.review-form label {
+			font-weight: bold;
+			display: block;
+			margin-bottom: 0.2rem;
+		}
+
+		.star-rating {
+			display: inline-flex;
+			gap: 4px;
+			user-select: none;
+		}
+
+		.star {
+			font-size: 20px;
+			color: gold;
+			cursor: pointer;
+			user-select: none;
+			line-height: 1;
+		}
+
+
+		.flash-message {
+			position: fixed;
+			top: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: #FFFACD;
+			/* Light Yellow */
+			color: #333;
+			/* Dark text for readability */
+			padding: 12px 20px;
+			border-radius: 6px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+			z-index: 1000;
+			animation: fadeOut 3s ease-in-out 2s forwards;
+			font-weight: bold;
+		}
+
+		@keyframes fadeOut {
+			to {
+				opacity: 0;
+				transform: translate(-50%, -10px);
+				visibility: hidden;
+			}
+		}
+
+		textarea {
+			width: 90%;
+			height: 60px;
+			resize: vertical;
+			border-radius: 4px;
+			border: 1px solid #ccc;
+			padding: 4px 6px;
+			font-family: Arial, sans-serif;
+			font-size: 0.9rem;
+			margin-top: 0.3rem;
+		}
+
+		button {
+			margin-top: 0.5rem;
+			padding: 0.5rem 1rem;
+			background-color: #007bff;
+			border: none;
+			border-radius: 4px;
+			color: white;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		button:hover {
+			background-color: #0056b3;
+		}
+	</style>
+
+
+
+
+
+</head>
+
+<body>
+
+	<div th:if="${message}" id="flash-message" class="flash-message">
+		<p th:text="${message}"></p>
+	</div>
+
+	<div th:if="${error}" style="text-align: center; margin-bottom: 1rem;">
+		<p style="color: red; font-weight: bold;" th:text="${error}"></p>
+	</div>
+
+
+	<div id="watchlist-message" class="alert d-none" role="alert"></div>
+
+
+
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+		<p style="margin: 0;"><strong>Logged user :</strong> <span th:text="${email}">user@example.com</span></p>
+		<form th:action="@{/logout}" method="get">
+			<button type="submit"
+				style="padding: 0.3rem 0.8rem; background-color: #dc3545; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer;">
+				Logout
+			</button>
+		</form>
+	</div>
+
+
+
+
+	<h1>Movie Search</h1>
+
+	<div class="search-container" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+		<form class="search-box" action="/search" method="get" style="display: flex; gap: 0.5rem; margin: 0;">
+			<input type="text" name="search" placeholder="Enter movie title..." required />
+			<button type="submit">Search</button>
+		</form>
+
+		<button id="add-to-watchlist-btn" style="white-space: nowrap;">Add Selected to Watch List</button>
+
+		<a href="/movie/watchlist" style="align-self: center;">Watch List</a>
+	</div>
+
+	<div class="movie-grid" th:if="${movies.size() > 0}">
+		<div class="movie-card" th:each="movie : ${movies}">
+			<img th:src="${movie.poster != 'N/A' ? movie.poster : '/images/no-poster.png'}" alt="Poster"
+				class="movie-poster" />
+			<div class="movie-title" th:text="${movie.title}">Movie Title</div>
+			<div class="movie-year" th:text="${movie.year}">Year</div>
+
+
+
+
+
+
+			<!-- Review form -->
+			<form class="review-form" th:action="@{/movie/review}" method="post"
+				th:id="'review-form-' + ${movie.imdbID}">
+				<input type="hidden" name="movieName" th:value="${movie.title}" />
+				<input type="hidden" name="imdbId" th:value="${movie.imdbID}" />
+
+				<input type="hidden" name="rating" th:id="'rating-value-' + ${movie.imdbID}"
+					th:value="${reviews[movie.imdbID] != null} ? ${reviews[movie.imdbID].rating} : 0" required />
+
+				<label>Rating:</label>
+				<div class="star-rating" th:id="'star-rating-' + ${movie.imdbID}">
+					<span class="star" data-movie-id="[[${movie.imdbID}]]" data-value="1">&#9733;</span>
+					<span class="star" data-movie-id="[[${movie.imdbID}]]" data-value="2">&#9733;</span>
+					<span class="star" data-movie-id="[[${movie.imdbID}]]" data-value="3">&#9733;</span>
+					<span class="star" data-movie-id="[[${movie.imdbID}]]" data-value="4">&#9733;</span>
+					<span class="star" data-movie-id="[[${movie.imdbID}]]" data-value="5">&#9733;</span>
+				</div>
+
+				<label for="comment-[[${movie.imdbID}]]">Comment:</label>
+				<textarea id="comment-[[${movie.imdbID}]]" name="comment" placeholder="Write your review..." required
+					th:text="${reviews[movie.imdbID] != null} ? ${reviews[movie.imdbID].comment} : ''"></textarea>
+
+				<div
+					style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.5rem; width: 100%;">
+					<button type="submit">Submit Review</button>
+
+					<input type="checkbox" class="watchlist-checkbox" th:value="${movie.imdbID}" style="margin: 0;"
+						title="Add to Watchlist" />
+				</div>
+
+
+
+			</form>
+
+		</div>
+	</div>
+
+	<div th:if="${movies.size() == 0}">
+		<p>No results found.</p>
+	</div>
+
+	<div id="watchlist-grid" style="display: none;">
+		<div th:each="movie : ${movies}">
+			<div th:if="${watchlist.contains(movie.imdbID)}" class="movie-card">
+				<!-- Show only movies in watchlist -->
+				<img th:src="${movie.poster}" />
+				<div th:text="${movie.title}"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		// Star rating logic with persistent selected stars
+		document.querySelectorAll('.star-rating').forEach(container => {
+			const movieId = container.id.replace('star-rating-', '');
+			const ratingInput = document.getElementById('rating-value-' + movieId);
+
+			updateStars(container, parseInt(ratingInput.value));
+
+			container.addEventListener('click', (e) => {
+				if (!e.target.classList.contains('star')) return;
+				const rating = parseInt(e.target.getAttribute('data-value'));
+				ratingInput.value = rating;
+				updateStars(container, rating);
+			});
+
+			container.addEventListener('mouseover', (e) => {
+				if (!e.target.classList.contains('star')) return;
+				const hoverVal = parseInt(e.target.getAttribute('data-value'));
+				container.querySelectorAll('.star').forEach(star => {
+					star.style.color = parseInt(star.getAttribute('data-value')) <= hoverVal ? 'gold' : 'lightgray';
+				});
+			});
+
+			container.addEventListener('mouseout', () => {
+				const rating = parseInt(ratingInput.value);
+				updateStars(container, rating);
+			});
+		});
+
+		function updateStars(container, rating) {
+			container.querySelectorAll('.star').forEach(star => {
+				star.style.color = parseInt(star.getAttribute('data-value')) <= rating ? 'gold' : 'lightgray';
+			});
+		}
+
+
+		document.getElementById("add-to-watchlist-btn").addEventListener("click", () => {
+			const selected = Array.from(document.querySelectorAll(".watchlist-checkbox:checked"))
+				.map(cb => cb.value);
+
+			if (selected.length === 0) {
+				alert("Please select at least one movie.");
+				return;
+			}
+
+			fetch("/movie/watchlist/add", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({imdbIds: selected})
+			})
+				.then(response => {
+					if (!response.ok) {
+						if (response.status === 409) {
+							// Handle 409 Conflict (e.g., movies already in watchlist)
+							return response.text().then(errorMessage => {
+								throw new Error("Watchlist conflict: " + errorMessage);
+							});
+						} else {
+							throw new Error("Failed to add to watchlist. Status: " + response.status);
+						}
+					}
+					return response.text(); // Or .json() if your API returns JSON
+				})
+				.then(message => {
+					alert("Movies added to watchlist.");
+				})
+				.catch(error => {
+					console.error(error);
+					alert("An error occurred while adding to watchlist." + error);
+				});
+		});
+
+
+		const toggleBtn = document.getElementById("toggle-watchlist-view");
+		toggleBtn.addEventListener("click", () => {
+			document.getElementById("movie-grid").style.display =
+				document.getElementById("movie-grid").style.display === "none" ? "block" : "none";
+
+			document.getElementById("watchlist-grid").style.display =
+				document.getElementById("watchlist-grid").style.display === "none" ? "block" : "none";
+
+			toggleBtn.innerText = toggleBtn.innerText === "Watch List" ? "Back to All Movies" : "Watch List";
+		});
+
+
+		const msgDiv = document.getElementById('watchlist-message');
+		msgDiv.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger');
+
+		if (data.status === 200) {
+			msgDiv.classList.add('alert-success');
+			msgDiv.innerText = data.message;
+		} else if (data.status === 409) {
+			msgDiv.classList.add('alert-warning');
+			msgDiv.innerText = data.message;
+		} else {
+			msgDiv.classList.add('alert-danger');
+			msgDiv.innerText = "An error occurred.";
+		}
+
+
+
+	</script>
+
+</body>
+
+</html>

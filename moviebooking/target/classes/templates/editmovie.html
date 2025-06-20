@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Movie</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f9f9f9;
+            padding: 30px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        label {
+            font-weight: 600;
+        }
+        .form-control, select[multiple] {
+            margin-bottom: 15px;
+        }
+        select[multiple] {
+            height: 120px;
+        }
+        button {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Edit Movie</h2>
+    <form th:action="@{'/movie-ticket-booking/movie/edit/' + ${movie.id}}" th:object="${movie}" method="post">
+        <div class="mb-3">
+            <label for="movieName" class="form-label">Movie Name</label>
+            <input type="text" id="movieName" th:field="*{movieName}" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="movieType" class="form-label">Movie Type</label>
+            <input type="text" id="movieType" th:field="*{movieType}" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <input type="text" id="rating" th:field="*{rating}" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="duration" class="form-label">Duration (e.g., 2h 30m)</label>
+            <input type="text" id="duration" th:field="*{duration}" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="releaseDate" class="form-label">Release Date</label>
+            <input type="date" id="releaseDate" th:field="*{releaseDate}" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="theaters" class="form-label">Theaters</label>
+            <select id="theaters" name="theaters" multiple class="form-control" required>
+                <option th:each="theater : ${theaters}"
+                        th:value="${theater.id}"
+                        th:text="${theater.name}"
+                        th:selected="${movie.theaters.contains(theater)}">
+                </option>
+            </select>
+            <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple theaters</small>
+        </div>
+
+		<div style="display: flex; gap: 10px;">
+		    <button type="submit" class="btn btn-primary" style="flex: 1;">Update Movie</button>
+		    <a href="/movie-ticket-booking/movie" class="btn btn-primary" style="flex: 1; text-align: center;">Cancel</a>
+		</div>
+    </form>
+</div>
+</body>
+</html>

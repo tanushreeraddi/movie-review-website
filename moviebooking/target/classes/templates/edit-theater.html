@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Theater</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        /* Make Cancel button same size and color as Update button */
+        .btn-cancel {
+            min-width: 120px;
+            background-color: #6c757d; /* Bootstrap secondary button color */
+            color: white;
+            border: none;
+        }
+        .btn-cancel:hover, .btn-cancel:focus {
+            background-color: #5a6268;
+            color: white;
+        }
+        /* Ensure Update button same width */
+        .btn-update {
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4" style="max-width: 500px;">
+    <h2 class="text-center mb-4">Edit Theater</h2>
+    <form th:action="@{'/movie-ticket-booking/theater/edit/' + ${theater.id}}" th:object="${theater}" method="post">
+        <!-- Hidden ID field -->
+        <input type="hidden" th:field="*{id}"/>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Theater Name</label>
+            <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter theater name" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" th:field="*{location}" class="form-control" id="location" placeholder="Enter location" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="screens" class="form-label">Number of Screens</label>
+            <input type="number" th:field="*{screens}" class="form-control" id="screens" placeholder="Enter number of screens" min="1" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-update">Update Theater</button>
+        <a th:href="@{/movie-ticket-booking/theater}" class="btn btn-cancel ms-2">Cancel</a>
+    </form>
+</div>
+</body>
+</html>
